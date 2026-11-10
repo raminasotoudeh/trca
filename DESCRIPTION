@@ -1,0 +1,39 @@
+Package: trca
+Title: Topological Relational Class Analysis
+Version: 0.1.0
+Authors@R: c(
+    person("Ramina", "Sotoudeh", role = c("aut", "cre", "cph"),
+           email = "ramina.sotoudeh@gmail.com",
+           comment = c(ORCID = "0000-0002-1716-017X"))
+    )
+Description: Implements Topological Relational Class Analysis ('tRCA'), a
+    method for recovering positions, construals, and the relational topology
+    among them from attitudinal survey data. 'tRCA' treats survey responses
+    as a signed respondent-item bipartite network, embeds respondents and
+    items jointly with a signed spectral decomposition, and summarises the
+    alignment, opposition, and orthogonality among the recovered positions in
+    a signed block density matrix. The package also provides baselines for
+    Relational Class Analysis ('RCA'; Goldberg (2011) <doi:10.1086/657976>),
+    simulators for canonical topologies, and plotting tools.
+License: MIT + file LICENSE
+URL: https://github.com/raminasotoudeh/trca
+BugReports: https://github.com/raminasotoudeh/trca/issues
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.1.0)
+Imports:
+    cluster,
+    igraph,
+    stats,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    mclust,
+    ggplot2,
+    graphlayouts,
+    knitr,
+    markdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.1

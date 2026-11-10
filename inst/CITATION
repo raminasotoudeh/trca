@@ -1,0 +1,27 @@
+bibentry(
+  bibtype = "Misc",
+  header = "To cite the tRCA method, please use:",
+  title = "From Typology to Topology: Positions, Construals, and Relational Structure in Attitudinal Data",
+  author = person("Ramina", "Sotoudeh",
+                  comment = c(ORCID = "0000-0002-1716-017X")),
+  year = "2026",
+  note = "Forthcoming",
+  textVersion = paste(
+    "Sotoudeh, R. (2026). From typology to topology: Positions, construals,",
+    "and relational structure in attitudinal data. Forthcoming."
+  )
+)
+
+bibentry(
+  bibtype = "Manual",
+  header = "To cite the trca software, please use:",
+  title = "trca: Topological Relational Class Analysis",
+  author = person("Ramina", "Sotoudeh",
+                  comment = c(ORCID = "0000-0002-1716-017X")),
+  year = "2026",
+  note = paste("R package version", meta$Version),
+  textVersion = paste0(
+    "Sotoudeh, R. (2026). trca: Topological Relational Class Analysis. ",
+    "R package version ", meta$Version, "."
+  )
+)

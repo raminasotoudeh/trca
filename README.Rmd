@@ -1,0 +1,70 @@
+<!-- README.md is generated from README.Rmd with knitr::knit(). Edit this file. -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
+                      fig.path = "man/figures/README-", dpi = 96)
+```
+
+# trca
+
+trca implements **Topological Relational Class Analysis (tRCA)**, a method
+for mapping the relational structure of attitudinal survey data. From one
+representation it recovers:
+
+- **positions**: groups of respondents (factions) who answer the items in a
+  similar way;
+- **construals**: which positions are relevant to one another (which "game"
+  they play);
+- **topology**: whether the positions in each game are aligned, opposed, or
+  orthogonal, for example bipolar opposition, a triadic impasse, a coalition,
+  or a hub-and-spoke structure.
+
+tRCA treats survey responses as a signed network between respondents and
+items, embeds both with a signed spectral decomposition, and clusters the
+respondents. Unlike Relational Class Analysis (RCA; Goldberg 2011), it keeps
+the sign of each relation, so respondents with mirror-image views are
+recognized as opposed rather than merged. RCA is included as a baseline.
+
+## Installation
+
+Install the development version from [GitHub](https://github.com/raminasotoudeh/trca):
+
+```{r, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("raminasotoudeh/trca", build_vignettes = TRUE)
+```
+
+```{r, eval = FALSE}
+# From a source tarball or a local copy of the package:
+install.packages("trca_0.1.0.tar.gz", repos = NULL, type = "source")
+```
+
+## Example
+
+Simulate three factions that each oppose the other two, then recover them:
+
+```{r example}
+library(trca)
+
+sim <- sim_triadic_impasse(n_per_faction = 60, items_per_block = 4, seed = 1)
+fit <- trca(sim$data, seed = 1, verbose = FALSE)
+fit
+
+topo <- topology(fit)
+topo
+```
+
+```{r network, eval = requireNamespace("ggplot2", quietly = TRUE), fig.width = 5, fig.height = 4}
+plot_faction_network(name_factions(topo, c("Left", "Centre", "Right")))
+```
+
+`trca()` chooses the number of factions automatically, including a single
+faction when the data show consensus. `compare_methods()` sets tRCA side by
+side with RCA, and `vignette("trca")` walks through a full analysis.
+
+## Citation
+
+Please cite the paper that introduces the method; see `citation("trca")`.
+
+Sotoudeh, R. From typology to topology: Positions, construals, and
+relational structure in attitudinal data. Forthcoming.

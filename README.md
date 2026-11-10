@@ -1,0 +1,86 @@
+<!-- README.md is generated from README.Rmd with knitr::knit(). Edit this file. -->
+
+
+
+# trca
+
+trca implements **Topological Relational Class Analysis (tRCA)**, a method
+for mapping the relational structure of attitudinal survey data. From one
+representation it recovers:
+
+- **positions**: groups of respondents (factions) who answer the items in a
+  similar way;
+- **construals**: which positions are relevant to one another (which "game"
+  they play);
+- **topology**: whether the positions in each game are aligned, opposed, or
+  orthogonal, for example bipolar opposition, a triadic impasse, a coalition,
+  or a hub-and-spoke structure.
+
+tRCA treats survey responses as a signed network between respondents and
+items, embeds both with a signed spectral decomposition, and clusters the
+respondents. Unlike Relational Class Analysis (RCA; Goldberg 2011), it keeps
+the sign of each relation, so respondents with mirror-image views are
+recognized as opposed rather than merged. RCA is included as a baseline.
+
+## Installation
+
+Install the development version from [GitHub](https://github.com/raminasotoudeh/trca):
+
+
+```r
+install.packages("remotes")
+remotes::install_github("raminasotoudeh/trca", build_vignettes = TRUE)
+```
+
+
+```r
+# From a source tarball or a local copy of the package:
+install.packages("trca_0.1.0.tar.gz", repos = NULL, type = "source")
+```
+
+## Example
+
+Simulate three factions that each oppose the other two, then recover them:
+
+
+```r
+library(trca)
+
+sim <- sim_triadic_impasse(n_per_faction = 60, items_per_block = 4, seed = 1)
+fit <- trca(sim$data, seed = 1, verbose = FALSE)
+fit
+#> tRCA clustering: 180 respondents x 12 items into 3 factions
+#>   k selection: silhouette (auto)
+#>   Centering:   mean
+#>   Faction sizes: 1 (n=60), 2 (n=60), 3 (n=60)
+
+topo <- topology(fit)
+topo
+#> Topology map: 3 factions, 1 game(s)
+#>   Game_1: Triadic Impasse (Faction_1, Faction_2, Faction_3)
+#> 
+#> Block density matrix:
+#>           Faction_1 Faction_2 Faction_3
+#> Faction_1     1.000    -0.476    -0.566
+#> Faction_2    -0.476     1.000    -0.456
+#> Faction_3    -0.566    -0.456     1.000
+```
+
+
+```r
+plot_faction_network(name_factions(topo, c("Left", "Centre", "Right")))
+#> Package 'graphlayouts' not found, falling back to circle layout
+```
+
+![plot of chunk network](man/figures/README-network-1.png)
+
+`trca()` chooses the number of factions automatically, including a single
+faction when the data show consensus. `compare_methods()` sets tRCA side by
+side with RCA, and `vignette("trca")` walks through a full analysis.
+
+## Citation
+
+Please cite the paper that introduces the method; see `citation("trca")`.
+
+Sotoudeh, R. From typology to topology: Positions, construals, and
+relational structure in attitudinal data. Forthcoming.

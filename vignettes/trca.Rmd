@@ -1,0 +1,275 @@
+---
+title: "Getting started with trca"
+output:
+  markdown::html_format:
+    options:
+      toc: true
+vignette: >
+  %\VignetteIndexEntry{Getting started with trca}
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>",
+                      fig.width = 6, fig.height = 4.5, dpi = 96)
+has_ggplot <- requireNamespace("ggplot2", quietly = TRUE)
+```
+
+Topological Relational Class Analysis (tRCA) recovers three things from
+attitudinal survey data in one step:
+
+- **positions**: groups of respondents (factions) who answer the items in a
+  similar way;
+- **construals**: which positions are relevant to one another, that is, who
+  is "playing the same game";
+- **topology**: how the positions relate within each game, whether aligned,
+  opposed, or orthogonal.
+
+tRCA treats the survey as a signed network between respondents and items,
+embeds both in a shared spectral space, and clusters the respondents. A
+signed block density matrix then summarizes how the factions relate.
+Relational Class Analysis (RCA; Goldberg 2011) is included as a baseline.
+
+This vignette walks through one analysis: simulate data with a known
+structure, fit tRCA, read the topology, and compare the result with RCA.
+
+```{r load}
+library(trca)
+```
+
+## Simulated data with a known topology
+
+`sim_triadic_impasse()` generates three factions, each of which favors its
+own block of items and rejects the other two. Every pair of factions is
+therefore opposed: a "triadic impasse". The `truth` element records each
+respondent's faction.
+
+```{r simulate}
+sim <- sim_triadic_impasse(n_per_faction = 60, items_per_block = 4, seed = 1)
+dim(sim$data)
+```
+
+The package also simulates bipolar opposition (`sim_bipolar()`), consensus
+(`sim_consensus()`), hub-and-spoke (`sim_hub_and_spoke()`), multipolar
+opposition (`sim_multipolar()`), and coalitions (`sim_coalition()`).
+
+Before fitting, `check_data()` reports missing values, constant
+respondents or items, the response scale, and a suggested centering.
+
+```{r check}
+check_data(sim$data)
+```
+
+## Fitting tRCA
+
+```{r fit}
+fit <- trca(sim$data, seed = 1, verbose = FALSE)
+fit
+```
+
+`trca()` chose the number of factions automatically (see
+[Choosing the number of factions](#choosing-the-number-of-factions)). It
+recovers the simulated factions exactly:
+
+```{r recovery}
+table(estimated = fit$clusters, true = sim$truth)
+adjusted_rand_index(fit$clusters, sim$truth)
+```
+
+The two most useful arguments besides `k` are:
+
+- `centering`: `"mean"` (the default) centers each item on its mean, so a
+  positive value means "more than the average respondent". `"midpoint"`
+  centers on the scale midpoint (for example 3 on a 1-5 scale), so a
+  positive value means "agree". Midpoint centering is easier to interpret
+  when the scale has a meaningful neutral point.
+- `seed`: k-means uses random starts. Pass a seed to make a fit
+  reproducible. Without one, results can differ slightly between runs.
+
+## Reading the topology
+
+`topology()` computes the signed block density matrix `B` and classifies it.
+Each entry is the correlation between two factions' mean response
+profiles: positive means the factions are aligned, negative means opposed,
+and near zero means orthogonal (they disagree about different things, or
+not at all).
+
+```{r topology}
+topo <- topology(fit)
+topo
+```
+
+Factions joined by substantive ties (|B| above `tie_threshold`, 0.1 by
+default) form a **game**. Each game is classified into one of: Consensus,
+Bipolar Opposition, Triadic Impasse, Multipolar Opposition, Coalition,
+Hub-and-Spoke, or Complex. Here all three factions oppose each other, so the
+data form a single Triadic Impasse.
+
+Factions can be given substantive names once you have inspected them:
+
+```{r name}
+topo <- name_factions(topo, c("Left", "Centre", "Right"))
+round(topo$B, 2)
+```
+
+## Plotting
+
+The plotting functions use ggplot2 (a suggested package) and return ggplot
+objects that can be modified further.
+
+The block matrix as a heatmap:
+
+```{r plot-block, eval = has_ggplot}
+plot_block_matrix(topo)
+```
+
+The same relations as a network. Edge color shows the sign (blue for
+opposition, red for alignment) and edge width shows the strength:
+
+```{r plot-network, eval = has_ggplot}
+plot_faction_network(topo)
+```
+
+Each faction's mean response to each item, relative to the overall mean,
+shows what the factions agree and disagree about:
+
+```{r plot-profiles, eval = has_ggplot, fig.height = 5}
+plot_faction_profiles(sim$data, fit$clusters, topo = topo)
+```
+
+The joint embedding of respondents (points) and items (labels) in the first
+two dimensions:
+
+```{r plot-embedding, eval = has_ggplot}
+plot(fit)
+```
+
+## Which items matter
+
+`trca_item_diagnostics()` reports, for each item, its variance, its norm in
+the embedding (how strongly it shapes the solution), and its eta-squared
+(how much of its variance the factions explain).
+
+```{r items}
+items <- trca_item_diagnostics(fit, sim$data)
+head(items[, c("item", "item_var", "embedding_norm", "eta_sq")])
+```
+
+With many items, `trca(..., filter_items = TRUE)` drops items whose
+embedding norm is below average before clustering. The screening uses only
+the embedding, not the clusters, so it does not bias the result towards
+the factions it finds.
+
+## Comparison with RCA
+
+RCA builds a respondent-by-respondent network from the *absolute*
+correlations between respondents' answers. Taking absolute values means two
+respondents who answer in mirror-image ways look just as similar as two who
+answer identically, so opposed positions are merged. `compare_methods()`
+fits both and reads both topologies from the same block density measure:
+
+```{r compare}
+compare_methods(sim$data, seed = 1, verbose = FALSE)
+```
+
+RCA finds two groups instead of three: it puts one faction together with
+most of another, even though the two oppose each other, and so reports a
+bipolar structure. Cross-tabulating against the truth shows this:
+
+```{r rca-table}
+rca <- rca_baseline(sim$data, seed = 1)
+table(rca = rca$clusters, true = sim$truth)
+```
+
+`rca_baseline()` (spectral clustering) and `rca_leiden()` (Leiden community
+detection) fit RCA directly.
+
+## Choosing the number of factions
+
+When `k` is not supplied, `trca()` chooses it in two steps.
+
+1. **Is there more than one faction?** Parallel analysis counts the
+   dimensions of the data that carry more structure than shuffled data
+   would. The gap statistic then checks whether respondents form separate
+   groups along those dimensions or one continuous spread. If they form one
+   spread, `trca()` returns a single faction (Consensus).
+2. **How many factions?** Otherwise, the silhouette criterion chooses k,
+   using only as many embedding dimensions as parallel analysis found (k
+   factions span k - 1 dimensions).
+
+Both steps are recorded in the fit:
+
+```{r k-diagnostics}
+fit$k_method
+fit$signal_dims
+```
+
+On consensus data, where everyone shares one profile with varying intensity,
+the first step returns one faction:
+
+```{r consensus}
+cons <- sim_consensus(n = 120, seed = 2)
+fit_cons <- trca(cons$data, seed = 1, verbose = FALSE)
+fit_cons$k
+fit_cons$one_faction_test$one_faction
+topology(fit_cons)
+```
+
+To see the evidence across a range of k, `trca_select_k()` reports the
+automatic choice with its silhouette widths, alongside the eigengap, the
+within-cluster sum of squares, and a spectral BIC:
+
+```{r select-k}
+ks <- trca_select_k(sim$data, k_range = 2:8, seed = 1, verbose = FALSE)
+ks
+```
+
+The spectral BIC penalizes each extra faction in proportion to the largest
+k considered, so in small samples it can prefer too few factions. Here it
+picks 2 when `k_range` runs to 8; with `k_range = 2:6` it picks 3. Treat it
+as a secondary diagnostic.
+
+You can always set `k` yourself, for example to match theory or a previous
+analysis, or set `min_k = 2` to skip the single-faction test.
+
+## Using your own data
+
+`trca()` takes a matrix or data frame with one row per respondent and one
+column per item. Some practical points:
+
+- **Item types.** Numeric and logical columns are used as they are. Ordered
+  factors are converted to their integer codes. Columns imported with haven
+  keep their numeric codes. Unordered factors and character columns are
+  rejected, because their codes have no order.
+- **Missing-data codes.** Survey files often code "refused" or "don't know"
+  as negative numbers (for example -9). Recode these to `NA` first;
+  `check_data()` warns about negative values in labelled columns.
+- **Missing values.** `NA` responses are allowed. tRCA treats a missing
+  response as the absence of a tie between that respondent and that item.
+  Respondents or items with no responses at all must be removed.
+- **Mixed scales.** By default (`rescale = TRUE`) each item is rescaled to
+  0-1, so items on 1-3 and 1-7 scales contribute equally.
+
+A typical analysis looks like this:
+
+```{r own-data, eval = FALSE}
+library(haven)
+survey <- read_dta("survey.dta")
+items <- survey[, c("q1", "q2", "q3", "q4", "q5", "q6")]
+items[] <- lapply(items, function(x) replace(x, x < 0, NA))
+
+check_data(items)
+fit <- trca(items, centering = "midpoint", seed = 1)
+topo <- topology(fit)
+plot_faction_network(topo)
+```
+
+## References
+
+Goldberg, A. (2011). Mapping shared understandings using relational class
+analysis: The case of the cultural omnivore reexamined. *American Journal
+of Sociology*, 116(5), 1397-1436. doi:10.1086/657976
+
+Sotoudeh, R. From typology to topology: Positions, construals, and
+relational structure in attitudinal data. Forthcoming.
