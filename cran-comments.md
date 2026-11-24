@@ -8,38 +8,27 @@ Sotoudeh (2026), published in American Behavioral Scientist,
 
 ## Test environments
 
-* local macOS 26.5 (aarch64), R 4.6.1 (previously recorded check)
-* local macOS Sonoma 14.7.7 (aarch64), R 4.3.1, `R CMD check --no-manual`
-  (2026-11-10; optional graphlayouts unavailable; incoming checks not run)
-* local macOS Sonoma 14.7.7 (aarch64), R 4.3.1, `R CMD check --no-manual`
-  (2026-11-24; optional graphlayouts unavailable)
-* GitHub Actions: macOS (release), Windows (release), Ubuntu (devel,
-  release, oldrel-1) <!-- TODO: pending the first push to https://github.com/raminasotoudeh/trca and verified workflow results -->
-* win-builder (devel and release) <!-- TODO: not submitted; record results after successful uploads -->
-* macOS builder (release) <!-- TODO: not submitted; record results after a successful upload -->
+* local macOS Sonoma 14.7.7 (aarch64), R 4.3.1,
+  `R CMD check --as-cran --no-manual` (2026-11-24), with network access,
+  all suggested packages installed, and Pandoc available
+* win-builder R-release and R-devel: uploaded 2026-11-24; results pending
+* macOS builder R-devel: upload endpoint returned HTTP 502; not confirmed
+* GitHub Actions: pending successful repository push and workflow results
 
 ## R CMD check results
 
-Previously recorded local `--as-cran` result: 0 errors | 0 warnings | 1 note
+Latest local result: 0 errors | 0 warnings | 2 notes
 
-* This is a new release.
+* New submission.
+* Unable to verify current time.
 
-Additional local check on 2026-11-10 (R 4.3.1, `--no-manual`, without
-`--as-cran`): 0 errors | 0 warnings | 1 note. The note is for the optional
-suggested package graphlayouts, which was unavailable in the checking
-environment. All 192 tests passed; examples and the vignette passed.
-Network restrictions prevented a fresh CRAN incoming check in this session.
+All 192 tests passed, with no failures, warnings, or skips. Examples and
+vignette checks passed. The local R version is older than current release;
+external checks on current R and a PDF-manual check remain pending.
+The earlier missing graphlayouts and Pandoc issues have been resolved.
 
-External check results are still pending; this file is not yet ready for
-submission.
-
-Fresh local check after the publication-citation update on 2026-11-24:
-0 errors | 0 warnings | 1 note (optional graphlayouts unavailable).
-Tests, examples, and vignette checks passed. A separate `--as-cran`
-attempt, with remote incoming checks disabled, aborted during dependency
-checking because CRAN could not be reached. This is not a successful
-`--as-cran` result. Final checks on current R with network access remain
-required before submission.
+This file is not yet ready for submission. Replace pending external checks
+with actual results and review any findings before submitting to CRAN.
 
 ## Notes for the reviewer
 

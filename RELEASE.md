@@ -2,103 +2,82 @@
 
 Status updated on 2026-11-24.
 
-## Latest preparation
+## Current status
 
-The published article citation is now included in the package and its
-documentation. Its title, author, journal, year, and DOI were checked against
-the local SAGE proof (ABS1497123-2.pdf, article opening page) and the
-publication URL supplied by the maintainer. No volume or issue was assumed.
+The release candidate is built and locally checked. It has not been submitted
+to CRAN. GitHub's public API reported an empty repository and no workflow runs
+on 2026-11-24. The local push failed because this session could not access
+usable GitHub credentials. The maintainer was asked to push from Terminal.
 
-The package installs, its README regenerates, and `citation("trca")` returns
-the published article plus a separate software citation. A fresh source
-tarball with the vignette was built on 2026-11-24.
+The journal citation has been updated throughout the package. Title, author,
+journal, year, and DOI were verified against the local SAGE proof
+(ABS1497123-2.pdf, article opening page) and the publication URL supplied by
+the maintainer. No volume or issue was assumed. The method citation remains
+separate from the software citation.
 
-The fresh local `R CMD check --no-manual` passed with 0 errors, 0 warnings,
-and 1 note for the unavailable optional package graphlayouts. The full
-`--as-cran` check was attempted but aborted when the dependency check could
-not reach CRAN. Remote incoming checks had been disabled for that attempt;
-it must not be reported as a completed CRAN check. R 4.3.1 is the locally
-available version; final submission checks must use current R.
+## Checks
 
-Command-line access to api.github.com also failed. No connected browser
-upload tool is available in this session. GitHub upload, CI, external builder
-checks, CRAN submission, and the release archive remain pending.
+- [x] Build source tarball with vignette.
+- [x] Install package and validate `citation("trca")`.
+- [x] Regenerate README from README.Rmd.
+- [x] Install the optional graphlayouts dependency in the temporary check library.
+- [x] Complete network-enabled `R CMD check --as-cran --no-manual` with all
+  suggested packages and Pandoc available: R 4.3.1, macOS Sonoma 14.7.7,
+  aarch64; 0 errors, 0 warnings, 2 notes (new submission; unable to verify
+  current time). All 192 tests passed, with no test failures, warnings or
+  skips; examples and vignette checks passed. This is not a current-R or
+  PDF-manual check.
+- [x] Upload the same tarball to win-builder R-release and R-devel. Both
+  upload responses acknowledged trca_0.1.0.tar.gz (238984 bytes) on 2026-11-24.
+- [ ] Read and save Windows results when emailed to the maintainer. Do not
+  resubmit merely because results have not arrived; the service is asynchronous.
+- [ ] Upload to macOS builder. Its form currently offers R-devel only. Two
+  attempts to the advertised submission endpoint returned HTTP 502 on
+  2026-11-24; no successful submission has been acknowledged.
+- [ ] Push `main` to https://github.com/raminasotoudeh/trca and review all
+  five jobs in `.github/workflows/R-CMD-check.yaml`.
+- [ ] Resolve findings from current-R external checks and complete final
+  CRAN submission checks, including the PDF manual.
+- [ ] Finalize cran-comments.md with actual external results, then submit
+  to CRAN and confirm the maintainer email.
 
-Prepared tarball and check logs are kept in `release-artifacts/` (excluded
-from package builds and Git). This is a release candidate, not a CRAN release.
+Prepared tarball, submission receipts, checksum, and check logs are in
+`release-artifacts/` (excluded from Git and package builds). Tarball SHA-256:
+`547e27fefc596b409c36c6868a245d184ed4f2263e1411402880f3aa104c3252`.
 
-## Repository
+## GitHub authentication
 
-- [x] Create https://github.com/raminasotoudeh/trca (public).
-- [x] Initialize this package directory as a standalone Git repository on `main`.
-- [x] Configure `origin` and add GitHub installation instructions to README.Rmd and README.md.
-- [x] Add package and issue-tracker URLs to DESCRIPTION.
-- [ ] Push the initial commit. Command-line DNS/network access was unavailable in the preparation session; the browser upload was cancelled without committing an incomplete package. The remote repository remains empty.
+The first push was rejected for missing `workflow` scope. The maintainer
+was instructed to refresh that scope. This session still reports invalid
+credentials and cannot authenticate a push; this does not establish the
+state of the maintainer's Terminal credentials.
 
-From this directory in a network-enabled terminal:
+From the package directory in the maintainer's Terminal:
 
 ```sh
 git push -u origin main
 ```
 
-If GitHub authentication fails, run `gh auth login --hostname github.com`
-and then `gh auth setup-git`, and retry the push. The existing account
-could not be verified from the restricted preparation session.
+If authentication or workflow scope is still missing:
 
-## Checks and CRAN submission
-
-- [x] Build the source package with its vignette.
-- [x] Local `R CMD check --no-manual`: R 4.3.1, macOS Sonoma 14.7.7, arm64;
-  0 errors, 0 warnings, 1 note (optional graphlayouts unavailable).
-  All 192 tests, examples, and the vignette passed. This check preceded the
-  documentation and repository-metadata changes; no R code changed.
-- [ ] Observe the five jobs in `.github/workflows/R-CMD-check.yaml` after
-  the push. Manual reruns are available through `workflow_dispatch`.
-- [ ] Submit the same source tarball to win-builder release and devel.
-- [ ] Submit the source tarball to the macOS builder.
-- [ ] Read all returned logs, resolve any issues, and replace all three
-  TODO entries in cran-comments.md with actual results and R versions.
-- [ ] Run a final `R CMD check --as-cran` with network access and all
-  suggested packages available, then submit to CRAN.
-
-The external builder uploads have **not** been submitted. The browser file
-picker did not attach the tarball, and command-line network access was
-unavailable. Do not report the pending checks as passing.
-
-With devtools installed, these commands run the external checks from the
-package directory:
-
-```r
-devtools::check_win_release(pkg = ".")
-devtools::check_win_devel(pkg = ".")
-devtools::check_mac_release(pkg = ".")
-```
-
-The check services send their results to the maintainer address in
-DESCRIPTION. After reviewing their results and finalizing cran-comments.md:
-
-```r
-devtools::check(pkg = ".", cran = TRUE)
-devtools::submit_cran(pkg = ".")
+```sh
+gh auth login --hostname github.com --git-protocol https --web --scopes workflow
+gh auth setup-git
+git push -u origin main
 ```
 
 ## Paper citation
 
-- [x] Once the paper is published, verify the journal and DOI, then update
-  `inst/CITATION`, `README.Rmd`, generated `README.md`, and
-  `vignettes/trca.Rmd`. Add its DOI to DESCRIPTION when appropriate.
-  Keep the paper citation separate from the software citation.
+Sotoudeh, R. (2026). From typology to topology: Positions, construals, and
+relational structure in attitudinal data. American Behavioral Scientist.
+https://doi.org/10.1177/00027642261497123
 
-Published paper: Sotoudeh (2026), American Behavioral Scientist,
-https://doi.org/10.1177/00027642261497123.
+## After CRAN acceptance
 
-## Release archive
-
-- [ ] After CRAN acceptance, tag the exact accepted source as `v0.1.0` and
-  publish a GitHub release.
-- [ ] Archive that release on Zenodo, verifying author, ORCID, version,
-  MIT license, and the files before publishing the record.
-- [ ] Add the assigned version DOI to the software citation and the
-  paper's code-availability statement. Never guess or prefill a DOI.
+- [ ] Tag the exact accepted source as v0.1.0 and publish a GitHub release.
+- [ ] Archive the release on Zenodo, verifying author, ORCID, version,
+  license, and files before publishing.
+- [ ] Add the assigned software DOI to the software citation and relevant
+  code-availability documentation. Never guess or prefill a DOI.
 
 No CRAN submission, release tag, or Zenodo record has been created.
