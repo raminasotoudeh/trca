@@ -1,14 +1,16 @@
 bibentry(
-  bibtype = "Misc",
+  bibtype = "Article",
   header = "To cite the tRCA method, please use:",
   title = "From Typology to Topology: Positions, Construals, and Relational Structure in Attitudinal Data",
   author = person("Ramina", "Sotoudeh",
                   comment = c(ORCID = "0000-0002-1716-017X")),
   year = "2026",
-  note = "Forthcoming",
+  journal = "American Behavioral Scientist",
+  doi = "10.1177/00027642261497123",
   textVersion = paste(
     "Sotoudeh, R. (2026). From typology to topology: Positions, construals,",
-    "and relational structure in attitudinal data. Forthcoming."
+    "and relational structure in attitudinal data. American Behavioral Scientist.",
+    "https://doi.org/10.1177/00027642261497123"
   )
 )
 

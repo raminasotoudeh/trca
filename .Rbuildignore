@@ -9,3 +9,4 @@
 ^pkgdown$
 ^\.gitignore$
 ^RELEASE\.md$
+^release-artifacts$

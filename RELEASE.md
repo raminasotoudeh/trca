@@ -1,6 +1,31 @@
 # Release checklist for trca 0.1.0
 
-Status recorded on 2026-11-10.
+Status updated on 2026-11-24.
+
+## Latest preparation
+
+The published article citation is now included in the package and its
+documentation. Its title, author, journal, year, and DOI were checked against
+the local SAGE proof (ABS1497123-2.pdf, article opening page) and the
+publication URL supplied by the maintainer. No volume or issue was assumed.
+
+The package installs, its README regenerates, and `citation("trca")` returns
+the published article plus a separate software citation. A fresh source
+tarball with the vignette was built on 2026-11-24.
+
+The fresh local `R CMD check --no-manual` passed with 0 errors, 0 warnings,
+and 1 note for the unavailable optional package graphlayouts. The full
+`--as-cran` check was attempted but aborted when the dependency check could
+not reach CRAN. Remote incoming checks had been disabled for that attempt;
+it must not be reported as a completed CRAN check. R 4.3.1 is the locally
+available version; final submission checks must use current R.
+
+Command-line access to api.github.com also failed. No connected browser
+upload tool is available in this session. GitHub upload, CI, external builder
+checks, CRAN submission, and the release archive remain pending.
+
+Prepared tarball and check logs are kept in `release-artifacts/` (excluded
+from package builds and Git). This is a release candidate, not a CRAN release.
 
 ## Repository
 
@@ -59,13 +84,13 @@ devtools::submit_cran(pkg = ".")
 
 ## Paper citation
 
-- [ ] Once the paper is published, verify the journal and DOI, then update
+- [x] Once the paper is published, verify the journal and DOI, then update
   `inst/CITATION`, `README.Rmd`, generated `README.md`, and
   `vignettes/trca.Rmd`. Add its DOI to DESCRIPTION when appropriate.
   Keep the paper citation separate from the software citation.
 
-No publication DOI has been verified. The existing forthcoming citation is
-retained.
+Published paper: Sotoudeh (2026), American Behavioral Scientist,
+https://doi.org/10.1177/00027642261497123.
 
 ## Release archive
 

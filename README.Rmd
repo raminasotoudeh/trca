@@ -66,5 +66,6 @@ side with RCA, and `vignette("trca")` walks through a full analysis.
 
 Please cite the paper that introduces the method; see `citation("trca")`.
 
-Sotoudeh, R. From typology to topology: Positions, construals, and
-relational structure in attitudinal data. Forthcoming.
+Sotoudeh, R. (2026). From typology to topology: Positions, construals, and
+relational structure in attitudinal data. *American Behavioral Scientist*.
+https://doi.org/10.1177/00027642261497123

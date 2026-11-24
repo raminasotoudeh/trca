@@ -8,7 +8,8 @@ Authors@R: c(
     )
 Description: Implements Topological Relational Class Analysis ('tRCA'), a
     method for recovering positions, construals, and the relational topology
-    among them from attitudinal survey data. 'tRCA' treats survey responses
+    among them from attitudinal survey data, as described in
+    Sotoudeh (2026) <doi:10.1177/00027642261497123>. 'tRCA' treats survey responses
     as a signed respondent-item bipartite network, embeds respondents and
     items jointly with a signed spectral decomposition, and summarises the
     alignment, opposition, and orthogonality among the recovered positions in
